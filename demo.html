@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>demo</title>
+    <meta name=viewport content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,minimal-ui">
+    <script src="js/jquery-1.10.2.min.js" type="text/javascript"></script>
+</head>
+<style>
+    .images {
+        width: 100%;
+        position: relative;
+    }
+    .images .bgImage {
+        width: 100%;
+    }
+    .images .moveImage {
+        width: 18.75%;
+        position: absolute;
+        top: 1px
+    }
+
+    .dragDiv {
+        position: relative;
+        margin-top: 10px;
+        height: 20px;
+        border: 1px solid #909090;
+    }
+    .dragDiv .move {
+        position: absolute;
+        left: 0;
+        width: 40px;
+        height: 100%;
+        background-color: red;
+    }
+</style>
+<body>
+    <div>
+        <div class="images">
+            <img class="bgImage" src="./img/bg.jpg"/>
+            <img id="moveImage" class="moveImage" src="./img/drag.png"/>
+        </div>
+        <div id="dragDiv" class="dragDiv">
+            <div id="move" class="move"></div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    $(function () {
+        var originTarget = null;
+        var moveXclient = null;
+
+        $('#move').on('touchstart', function (e) {
+            originTarget = e.target;
+            var clientX = e.originalEvent.targetTouches[0].clientX;
+            moveXclient = clientX;
+        });
+        $(window).on('touchmove', function (e) {
+            if (moveXclient !== null) {
+                var leftValue = parseFloat($(originTarget).css('left'));
+                var clientX = e.originalEvent.targetTouches[0].clientX;
+                var left = leftValue + (clientX - moveXclient);
+
+                var contentWidth = parseFloat($('#dragDiv').css('width'));
+                if (left < 0 || (left + 40 > contentWidth)) {
+                    return;
+                }
+
+                $(originTarget).css('left', left + 'px');
+                $('#moveImage').css('left', left + 'px');
+                moveXclient = clientX;
+            }
+        });
+        $(window).on('touchend', function (e) {
+            var leftValue = parseFloat($(originTarget).css('left'));
+            var contentWidth = parseFloat($('#dragDiv').css('width'));
+
+            console.log(leftValue / contentWidth);
+
+            $(originTarget).css('left', '0');
+            $('#moveImage').css('left', '0');
+            moveXclient = null;
+            originTarget = null;
+        });
+    });
+</script>
+</html>
